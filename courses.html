@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .d1 {
+            border: 1px solid navy;
+            background-color: darksalmon;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    <button onclick="getDataFromPrivat()">Get Courses</button>
+    <script>
+        let main = document.getElementById("main");
+        async function getUserData(userId){
+            let resp = await fetch(`https://jsonplaceholder.typicode.com/users/${userId}`);
+            if(resp.ok === true)
+            {
+                let userData = await resp.json();
+                return userData;
+            }
+        }
+        async function getDataFromPrivat(){
+            let resp = await fetch("https://jsonplaceholder.typicode.com/posts");
+            if(resp.ok===true){
+                main.innerText = "";
+                // let str = await resp.text();
+                // let data =JSON.parse(str); 
+                let data = await resp.json();
+                console.log(data);
+                Array.from(data).forEach((post)=>{
+                    let div = document.createElement("div");
+                    let h2 = document.createElement("h2");
+                    h2.dataset.id = post.id;
+                    h2.dataset.userId = post.userId;
+                    h2.addEventListener("click", async function(e){
+                        let elem = e.target;
+                        let userId  = elem.dataset.userId;
+                        // alert(elem.dataset.userId);
+                        let authorData = await getUserData(userId);
+                        let str = JSON.stringify(authorData);
+                        alert(str);
+
+                    })
+                    h2.innerText = post.title;
+                    div.appendChild(h2);
+                    let p = document.createElement("p");
+                    p.innerText = post.body;
+                    div.appendChild(p);
+                    div.classList.add("d1")
+                    main.appendChild(div);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
